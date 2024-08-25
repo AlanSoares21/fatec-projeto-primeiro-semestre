@@ -4,11 +4,21 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useEffect } from 'react';
-import { Link, router } from 'expo-router';
+import { useState } from 'react';
+import { Link, useFocusEffect } from 'expo-router';
+import { username } from '@/components/CommomDataContext';
 
 export default function HomeScreen() {
+  const [user, setUser] = useState<{name: string}>()
 
+  useFocusEffect(() => {
+    username.get().then(name => {
+      if (name) 
+        setUser({name});
+      else
+        setUser(undefined)
+    })
+  });
 
   return (
     <ParallaxScrollView
@@ -20,12 +30,18 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <ThemedText type="title">Welcome {user ? user.name : ""}!</ThemedText>
         <HelloWave />
       </ThemedView>
       <Link href='/login'>
+        
         <ThemedText type='defaultSemiBold'>
-          login
+          {
+            !user ?
+            "login"
+            :
+            "logoff"
+          }
         </ThemedText>
       </Link>
       <ThemedView style={styles.stepContainer}>

@@ -1,28 +1,10 @@
-import { createContext, useContext, useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type TCommomData = {
-    user?: {
-        name: string;
-    };
-
-    setUser(user: {name: string}): any;
-}
-
-export const CommomData = createContext<TCommomData>({
-    setUser: function (user: { name: string; }) {
-        throw new Error("Function not implemented.");
+export const username = {
+    set(value: string) {
+        return AsyncStorage.setItem('username', value)
+    },
+    get() {
+        return AsyncStorage.getItem('username')
     }
-});
-
-export const useCommomData = () => useContext(CommomData)
-
-export function CommomDataProvider() {
-    const [userdata, setUserData] = useState<TCommomData['user']>();
-
-    return <CommomData.Provider value={{
-        user: userdata,
-        setUser: setUserData
-    }}>
-
-    </CommomData.Provider>
 }
