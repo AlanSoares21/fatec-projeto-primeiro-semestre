@@ -6,22 +6,37 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useState } from 'react';
 import { Link, useFocusEffect } from 'expo-router';
-import { username } from '@/components/CommomDataContext';
+import { literaryWorksToShow, username } from '@/components/CommomDataContext';
 import LiteraryWorkCard from '@/components/basic/LiteraryWorkCard';
 import ThemedBtn from '@/components/ThemedBtn';
+import { TLastLiteraryWork } from '@/constants/types';
 
 export default function HomeScreen() {
     const [user, setUser] = useState<{name: string}>();
 
-    const [lastLecture, setLastLecture] = useState();
+    const [lastLiteraryWorks, setLastLiteraryWorks] = useState<TLastLiteraryWork[]>();
 
     useFocusEffect(() => {
+        let isActive = true;
         username.get().then(name => {
+            if (!isActive)
+                return;
             if (name) 
                 setUser({name});
             else
                 setUser(undefined)
         })
+
+        literaryWorksToShow.get().then(data => {
+            if (!isActive)
+                return;
+            if (data)
+                setLastLiteraryWorks(data)
+            else
+                setLastLiteraryWorks(undefined)
+        })
+
+        return () => {isActive = false};
     });
 
     return (
@@ -32,20 +47,18 @@ export default function HomeScreen() {
             </ThemedView>
             <View style={{gap: 8}}>
                 {
-                    ([1, 2, 3, 4, 5])
-                    .map(i => 
-                        <LiteraryWorkCard 
-                            key={`key-${i}`}
+                    lastLiteraryWorks &&
+                    lastLiteraryWorks.map((work, i) => 
+                        <LiteraryWorkCard
+                            key={'key-'+i}
                             left={
-                                <View>
-                                    <Image 
-                                        source={require('@/assets/images/react-logo.png')} 
-                                        style={{ alignSelf: 'center' }} 
-                                    />
-                                </View>
+                                <Image 
+                                    source={require('@/assets/images/react-logo.png')} 
+                                    style={{ alignSelf: 'center' }} 
+                                />
                             }
                             rigth={<View style={{gap: 4}}>
-                                <ThemedText type='subtitle'>Title</ThemedText>
+                                <ThemedText type='subtitle'>{work.title}</ThemedText>
                                 <ThemedText type='default'>Some information</ThemedText>
                                 <ThemedBtn title="i'm reading" />
                                 <ThemedBtn title="i stoped read" />

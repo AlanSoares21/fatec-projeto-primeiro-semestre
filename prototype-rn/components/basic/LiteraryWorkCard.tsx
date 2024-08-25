@@ -47,7 +47,7 @@ export default function LiteraryWorkCard({
         >
             {left}
         </View>
-        <View style={{height: '100%'}}>
+        <View style={{height: '100%', maxWidth: '45%'}}>
             {rigth}
         </View>
     </View>;
