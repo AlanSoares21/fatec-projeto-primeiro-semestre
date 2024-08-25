@@ -18,6 +18,7 @@ const commom = {
   tabBarBackgroundActive: '#D65555',
   tabBarBackground: '#BE4B4B',
   inputBackground: '#D9D9D9',
+  imageBackground: '#E7E7E7',
 }
 
 export const Colors = {

@@ -1,9 +1,9 @@
-export type TLastLectureChapter = {
+export type TLatLiteraryWorkChapter = {
     chapter: number;
     title: string;
 }
 
-export type TLastLecture = {
+export type TLatLiteraryWork = {
     title: string;
-    chapter: TLastLectureChapter;
+    chapter: TLatLiteraryWorkChapter;
 }
