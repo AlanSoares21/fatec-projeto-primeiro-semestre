@@ -4,7 +4,6 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { CommomDataProvider } from '@/components/CommomDataContext';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -13,7 +12,10 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
+        tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarInactiveBackgroundColor: Colors[colorScheme ?? 'light'].tabBarBackground,
+        tabBarActiveBackgroundColor: Colors[colorScheme ?? 'light'].tabBarBackgroundActive,
+        headerShown: false
       }}>
       <Tabs.Screen
         name="index"
@@ -21,7 +23,7 @@ export default function TabLayout() {
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
+          )
         }}
       />
       <Tabs.Screen
