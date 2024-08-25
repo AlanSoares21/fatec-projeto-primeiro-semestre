@@ -5,7 +5,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useState } from 'react';
-import { Link, useFocusEffect } from 'expo-router';
+import { Link, router, useFocusEffect } from 'expo-router';
 import { literaryWorksToShow, username } from '@/components/CommomDataContext';
 import LiteraryWorkCard from '@/components/basic/LiteraryWorkCard';
 import ThemedBtn from '@/components/ThemedBtn';
@@ -59,9 +59,12 @@ export default function HomeScreen() {
                             }
                             rigth={<View style={{gap: 4}}>
                                 <ThemedText type='subtitle'>{work.title}</ThemedText>
-                                <ThemedText type='default'>Some information</ThemedText>
-                                <ThemedBtn title="i'm reading" />
-                                <ThemedBtn title="i stoped read" />
+                                {/*<ThemedText type='default'>Some information</ThemedText>*/}
+                                <ThemedBtn 
+                                    title={`Você parou no capitulo ${work.chapter.chapter}`} 
+                                    onPress={() => router.navigate('/workdiscussion/' + i)}
+                                />
+                                <ThemedBtn title="ver dicussões" />
                             </View>}
                         />
                     )
