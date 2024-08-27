@@ -1,0 +1,1 @@
+java -jar android/bundletool-all-.1.17.1.jar build-apks --bundle=android/app/build/outputs/bundle/release/app-release.aab --output=android/app/build/outputs/bundle/release/app-release.apks --ks=android/app/debug.keystore --ks-pass=pass:android --ks-key-alias=androiddebugkey --mode=universal
