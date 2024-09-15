@@ -13,4 +13,16 @@ public class LiteraryWorkController: StdController
     ) {
         return Ok(await ltwkSvc.ListWorks(query));
     }
+
+    [HttpGet("{lwid}/chapter/{chapterIndex}")]
+    public async Task<IActionResult> Chapter(
+        string lwid, 
+        int chapterIndex,
+        ILiteraryWorkService ltwkSvc
+    ) {
+        return File(
+            await ltwkSvc.ChapterFile(lwid, chapterIndex), 
+            "application/html; charset=utf-8"
+        );
+    }
 }

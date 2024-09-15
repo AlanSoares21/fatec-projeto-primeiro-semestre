@@ -1,5 +1,6 @@
 using System.Net;
 using LeiaApi.Models;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -19,11 +20,29 @@ public class ResponseExceptionFilter: IActionFilter, IOrderedFilter
 
     public void OnActionExecuted(ActionExecutedContext context)
     {
-        if (context.Exception is not null)
+        if (context.Exception is ApiException ex)
         {
             _log.LogError(
-                "Error while processing request. Message: {message}", 
-                context.Exception.Message
+                "Error - Status: {st}. Message: {message}", 
+                ex.StatusCode,
+                ex.Message
+            );
+            context.Result = new ObjectResult(new StdError() {
+                Message = ex.Message,
+                StatusCode = ex.StatusCode
+            })
+            {
+                StatusCode = (int)ex.StatusCode
+            };
+
+            context.ExceptionHandled = true;
+        }
+        else if (context.Exception is not null)
+        {
+            _log.LogCritical(
+                "Error while processing request. \nMessage: {message}\nPath: {path}", 
+                context.Exception.Message,
+                context.HttpContext.Request.GetDisplayUrl()
             );
             context.Result = new ObjectResult(new StdError() {
                 Message = "Internal server exception: " + context.Exception.Message,
