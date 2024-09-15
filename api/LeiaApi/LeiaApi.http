@@ -1,0 +1,6 @@
+@LeiaApi_HostAddress = http://localhost:5018
+
+GET {{LeiaApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
