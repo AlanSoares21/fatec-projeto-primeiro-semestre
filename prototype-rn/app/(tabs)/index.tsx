@@ -4,7 +4,7 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, router, useFocusEffect } from 'expo-router';
 import { clearData, literaryWorksToShow, username } from '@/components/CommomDataContext';
 import LiteraryWorkCard from '@/components/basic/LiteraryWorkCard';
@@ -16,29 +16,30 @@ export default function HomeScreen() {
 
     const [lastLiteraryWorks, setLastLiteraryWorks] = useState<TLiteraryWork[]>();
 
-    useEffect(() => {
-        console.log("oi");
-        let isActive = true;
-        username.get().then(name => {
-            if (!isActive)
-                return;
-            if (name) 
-                setUser({name});
-            else
-                setUser(undefined)
-        })
-
-        literaryWorksToShow.get().then(data => {
-            if (!isActive)
-                return;
-            if (data)
-                setLastLiteraryWorks(data)
-            else
-                setLastLiteraryWorks(undefined)
-        })
-
-        return () => {isActive = false};
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            let isActive = true;
+            username.get().then(name => {
+                if (!isActive)
+                    return;
+                if (name) 
+                    setUser({name});
+                else
+                    setUser(undefined)
+            })
+    
+            literaryWorksToShow.get().then(data => {
+                if (!isActive)
+                    return;
+                if (data)
+                    setLastLiteraryWorks(data)
+                else
+                    setLastLiteraryWorks(undefined)
+            })
+    
+            return () => {isActive = false};
+        }, [])
+    );
 
     return (
         <ParallaxScrollView>

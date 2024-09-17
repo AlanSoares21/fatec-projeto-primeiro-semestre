@@ -4,7 +4,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { TLastLiteraryWork, TLiteraryWork } from "@/constants/types";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Image } from 'react-native';
 
 export default function ReadScreen(): React.JSX.Element {
@@ -15,7 +15,6 @@ export default function ReadScreen(): React.JSX.Element {
     const [workData, setWorkData] = useState<TLiteraryWork>();
 
     useEffect(() => {
-        console.log("rodou o use effec")
         let isActive = true;
         if (
             workid !== undefined && typeof workid === "string" &&
@@ -27,10 +26,8 @@ export default function ReadScreen(): React.JSX.Element {
                     return;
                 if (l) {
                     let i = l.findIndex(v => v.id === workid)
-                    if (i === -1) {
-                        console.log('index -1', {workid, l})
+                    if (i === -1)
                         return;
-                    }
                     setWorkData(l[i])
                     getContent(l[i].chapters[chapterIndexInt])
                         .then(t => {
@@ -43,12 +40,8 @@ export default function ReadScreen(): React.JSX.Element {
                             setText('error on getting chapter content')
                         })
                 }
-                else 
-                    console.log('workid ou chapter index tem valor ruim', {workid, chapterIndex})
             });
         }
-        else 
-            console.log('workid ou chapter index tem valor ruim', {workid, chapterIndex})
         return () => {isActive = false};
     }, []);
 
