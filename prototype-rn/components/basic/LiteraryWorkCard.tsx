@@ -1,12 +1,13 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ReactElement } from 'react';
-import { View, ViewProps } from 'react-native';
+import { DimensionValue, View, ViewProps } from 'react-native';
 
 export type TLiteraryWorkCard = ViewProps & {
     lightColor?: string;
     darkColor?: string;
     rigth?: ReactElement;
     left?: ReactElement;
+    cardMaxHeigh?: DimensionValue;
 }
 
 export default function LiteraryWorkCard({
@@ -15,6 +16,7 @@ export default function LiteraryWorkCard({
     lightColor, 
     darkColor, 
     style, 
+    cardMaxHeigh,
     ...otherProps
 }: TLiteraryWorkCard) {
     const backgroundColor = useThemeColor({ 
@@ -32,7 +34,8 @@ export default function LiteraryWorkCard({
                 flexDirection: 'row',
                 gap: 8,
                 backgroundColor,
-                padding: 8
+                padding: 8,
+                maxHeight: cardMaxHeigh
             }
         ]}
         {...otherProps}
@@ -40,8 +43,7 @@ export default function LiteraryWorkCard({
         <View 
             style={{
                 width: '50%', 
-                height: '100%',
-                borderRadius: 8,
+                maxHeight: '100%',
                 backgroundColor: imageBackground
             }}
         >

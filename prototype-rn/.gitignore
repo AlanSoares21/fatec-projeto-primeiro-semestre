@@ -23,3 +23,5 @@ expo-env.d.ts
 android/**/generated
 android/app/build
 android/*
+
+.env

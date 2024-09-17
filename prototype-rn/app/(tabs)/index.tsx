@@ -4,19 +4,20 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, router, useFocusEffect } from 'expo-router';
-import { literaryWorksToShow, username } from '@/components/CommomDataContext';
+import { clearData, literaryWorksToShow, username } from '@/components/CommomDataContext';
 import LiteraryWorkCard from '@/components/basic/LiteraryWorkCard';
 import ThemedBtn from '@/components/ThemedBtn';
-import { TLastLiteraryWork } from '@/constants/types';
+import { TLastLiteraryWork, TLiteraryWork } from '@/constants/types';
 
 export default function HomeScreen() {
     const [user, setUser] = useState<{name: string}>();
 
-    const [lastLiteraryWorks, setLastLiteraryWorks] = useState<TLastLiteraryWork[]>();
+    const [lastLiteraryWorks, setLastLiteraryWorks] = useState<TLiteraryWork[]>();
 
-    useFocusEffect(() => {
+    useEffect(() => {
+        console.log("oi");
         let isActive = true;
         username.get().then(name => {
             if (!isActive)
@@ -37,7 +38,7 @@ export default function HomeScreen() {
         })
 
         return () => {isActive = false};
-    });
+    }, []);
 
     return (
         <ParallaxScrollView>
@@ -53,33 +54,31 @@ export default function HomeScreen() {
                             key={'key-'+i}
                             left={
                                 <Image 
-                                    source={require('@/assets/images/react-logo.png')} 
+                                    source={require('@/assets/images/open-book.png')} 
                                     style={{ alignSelf: 'center' }} 
                                 />
                             }
                             rigth={<View style={{gap: 4}}>
                                 <ThemedText type='subtitle'>{work.title}</ThemedText>
-                                {/*<ThemedText type='default'>Some information</ThemedText>*/}
                                 <ThemedBtn 
-                                    title={`Você parou no capitulo ${work.chapter.chapter}`} 
+                                    title={`Você parou no capitulo 1`} 
+                                    onPress={() => router.navigate('/read/' + work.id + '/0')}
+                                />
+                                <ThemedBtn 
+                                    title="ver dicussões" 
                                     onPress={() => router.navigate('/workdiscussion/' + i)}
                                 />
-                                <ThemedBtn title="ver dicussões" />
                             </View>}
                         />
                     )
                 }
             </View>
-            <Link href='/login'>
-                <ThemedText type='defaultSemiBold'>
-                    {
-                        !user ?
-                        "login"
-                        :
-                        "logoff"
-                    }
-                </ThemedText>
-            </Link>
+            <ThemedBtn 
+                title={!user ? 'login' : 'logoff'} 
+                onPress={() => {
+                    clearData().then(() => router.replace('/login'))
+                }}
+            />
         </ParallaxScrollView>
     );
 }

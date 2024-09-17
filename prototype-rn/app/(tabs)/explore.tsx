@@ -1,102 +1,139 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform } from 'react-native';
+import { StyleSheet, Image, Platform, View } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useCallback, useEffect, useState } from 'react';
+import * as api from '@/components/Api';
+import { TLiteraryWork, TStdList, TStdPaginationQuery } from '@/constants/types';
+import LiteraryWorkCard from '@/components/basic/LiteraryWorkCard';
+import ThemedBtn from '@/components/ThemedBtn';
+import { Link, router, useFocusEffect } from 'expo-router';
+import { literaryWorksToShow } from '@/components/CommomDataContext';
 
-export default function TabTwoScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText> library
-          to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
-  );
+const itemsPerPg = 10;
+
+export default function ExploreScreen() {
+
+    const [isSearchingWorks, setIsSearchingWorks] = 
+        useState(false);
+    const [worksList, setWorksList] = 
+        useState<TStdList<TLiteraryWork>>({
+            count: 10,
+            start: 0,
+            data: [],
+            total: 0
+        });
+
+    const searchWorks = useCallback((qr: TStdPaginationQuery) => {
+        let active = true;
+        setIsSearchingWorks(true);
+        api.listWorks(qr)
+            .then(r => {
+                if (!active) 
+                    return;
+                if (api.isApiError(r)) {
+                    alert(r.message);
+                    return;
+                }
+                setWorksList(r)
+            })
+        .finally(() => {
+            if (!active) 
+                return;
+            setIsSearchingWorks(false)
+        })
+        return () => {
+            active = false;
+        }
+    }, []);
+
+    const readWork = useCallback((work: TLiteraryWork) => {
+        api.getChapter(work, 0)
+            .then(result => {
+                result.downloadAsync()
+                .then(async () => {
+                    let works = await literaryWorksToShow.get();
+                    if (works === undefined)
+                        works = [];
+                    works.push(work)
+                    await literaryWorksToShow.set(works);
+                    router.navigate("/(tabs)")
+                })
+                .catch(e => {
+                    console.log('error when downloading file', {e, work})
+                    alert('Error when downloading ' + work.title);
+                });
+            });
+    }, []);
+
+    useEffect(() => {
+        const cancel = searchWorks({start: 0, count: itemsPerPg})
+        return () => {
+            cancel();
+        }
+    }, [])
+
+    return (
+        <ParallaxScrollView>
+            <ThemedText type="title">Explore</ThemedText>   
+            {
+                isSearchingWorks ?
+                <ThemedText>Searhcing for works...</ThemedText>
+                :
+                (
+                    worksList.count === 0 ?
+                    <ThemedText>No works found.</ThemedText>
+                    :
+                    worksList.data.map(v => 
+                        (<LiteraryWorkCard 
+                            key={'card-'+v.id} 
+                            
+                            left={
+                                <Image 
+                                    source={require('@/assets/images/open-book.png')} 
+                                    style={{
+                                        alignSelf: 'center', 
+                                        maxWidth: '100%',
+                                        maxHeight: '100%' 
+                                    }} 
+                                />
+                            }
+                            rigth={<View style={{gap: 4}}>
+                                <ThemedText type='subtitle'>{v.title}</ThemedText>
+                                <ThemedText type='default'>{v.type}</ThemedText>
+                                <ThemedText type='default'>Autor: {v.author}</ThemedText>
+                                <ThemedBtn 
+                                    title={`ler`} 
+                                    onPress={() => readWork(v)}
+                                />
+                                <ExternalLink href={v.source}>Abrir o original</ExternalLink>
+                            </View>}
+                        />)
+                    )
+                )
+            }
+            <View style={{flex: 1, flexDirection: 'row', gap: 4}}>
+                <ThemedBtn
+                    title='previous'
+                    disabled={worksList.start <= itemsPerPg}
+                    onPress={() => searchWorks({
+                        start: worksList.start - itemsPerPg, 
+                        count: itemsPerPg
+                    })}
+                />
+                <ThemedBtn
+                    title='next'
+                    disabled={worksList.start + itemsPerPg >= worksList.total}
+                    onPress={() => searchWorks({
+                        start: worksList.start + itemsPerPg, 
+                        count: itemsPerPg
+                    })}
+                />
+            </View>
+        </ParallaxScrollView>
+    );
 }
-
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-});
