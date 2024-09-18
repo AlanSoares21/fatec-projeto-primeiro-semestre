@@ -23,6 +23,7 @@ build-docker-image() {
 
 ensure-docker-image-exists() {
     docker image ls | grep $ApiImageName | grep $ApiVersion
+    result=$?
     if [ ! $result = 0 ]; then
         echo "docker image $ApiImageName:$ApiVersion not found. building it"
         build-docker-image
