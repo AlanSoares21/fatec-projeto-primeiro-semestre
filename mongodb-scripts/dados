@@ -1,0 +1,16 @@
+literaryworks
+	type: novel|chronical
+	chapters: [
+		{
+			title: string
+			filepath: string
+			size: number #in bytes
+			source: string
+		}
+	]
+	title: string
+	author: string
+	source: string
+
+
+
