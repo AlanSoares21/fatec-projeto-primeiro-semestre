@@ -4,7 +4,8 @@ import {
     makeDirectoryAsync, getInfoAsync
 } from 'expo-file-system'
 
-const url = process.env.API_URL || 'http://10.0.2.2:5018';
+const url = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5018';
+//const url = 'https://api.eiind.craftpls.app.br';
 
 function handleError(e: any): TApiError {
     console.log({error: e, keys: Object.keys(e)})
