@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "leia!",
-    "slug": "leia",
+    "name": "Z read",
+    "slug": "zRead",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "leia.app"
+      "package": "z_read.app"
     },
     "web": {
       "bundler": "metro",
