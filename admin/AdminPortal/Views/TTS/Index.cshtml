@@ -19,7 +19,16 @@
             @foreach(var work in Model.Works.Data) {
                 <tr>
                     <td>
-                        <input type="checkbox" name="workIds" value=@work.Id />
+                        @if (work.Chapters.Any(c => c.Mp3 != null)) {
+                            <b>---</b>
+                        } else {
+                            <input 
+                                type="checkbox" 
+                                name="workIds" 
+                                value=@work.Id 
+                                
+                            />
+                        }
                     </td>
                     <td>@work.Title</td>
                     <td>@work.Author</td>

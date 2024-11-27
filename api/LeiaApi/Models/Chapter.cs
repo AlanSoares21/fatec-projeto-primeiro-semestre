@@ -15,4 +15,6 @@ public class Chapter
     
     [BsonElement("filePath")]
     public string FilePath {get; set;} = null!;
+    [BsonElement("mp3")]
+    public string? Mp3 {get; set;} = null;
 }
