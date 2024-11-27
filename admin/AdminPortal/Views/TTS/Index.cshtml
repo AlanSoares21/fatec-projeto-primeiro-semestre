@@ -1,0 +1,62 @@
+@{
+    ViewData["Title"] = "TTS";
+}
+@model TTSIndexModel
+
+
+<form asp-action="AddWorksInTheQueue">
+    <h2>Work list</h2>
+    <table class="table">
+        <header>
+            <tr>
+                <th> </th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Source</th>
+            </tr>
+        </header>
+        <tbody>
+            @foreach(var work in Model.Works.Data) {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="workIds" value=@work.Id />
+                    </td>
+                    <td>@work.Title</td>
+                    <td>@work.Author</td>
+                    <td>@work.Source</td>
+                </tr>   
+            }
+        </tbody>
+    </table>
+    <div>
+        <input type="submit" class="btn btn-success" value="Generate Speech">
+    </div>
+    <div class="mt-1">
+        <i>@Model.Works.Total works found.</i>
+    </div>    
+</form>
+<section class="row justify-content-center mt-1">
+    <div class="col-auto">
+        @{
+            var query = ServerUtils.GetQueryValues(Model.Pagination);
+            query.Remove("Start");
+        }
+        @await Component.InvokeAsync("Pagination", new {
+            start = Model.Pagination.Start,
+            count = Model.Pagination.Count,
+            total = Model.Works.Total,
+            query = query
+        })
+    </div>
+</section>
+
+
+<div>
+    <div>@Model.WorksInTheQueue.Count Works in the queue (Works ids)</div>
+    @foreach(var work in Model.WorksInTheQueue) {
+        <div>
+            <b>@work.WorkId</b>
+            <b>@work.RequestedAt.ToLongDateString()</b>
+        </div>   
+    }
+</div>
