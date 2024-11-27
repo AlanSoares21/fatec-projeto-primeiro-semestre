@@ -11,13 +11,16 @@ public class ReaderController : Controller
 {
     private readonly ILogger<ReaderController> _logger;
     ILiteraryWorkService _lwService;
+    string _apiUrl;
 
     public ReaderController(
         ILogger<ReaderController> logger,
-        ILiteraryWorkService lwService)
+        ILiteraryWorkService lwService,
+        IConfiguration configuration)
     {
         _logger = logger;
         _lwService = lwService;
+        _apiUrl = configuration["ApiUrl"]?? "";
     }
 
     public async Task<IActionResult> Index(string workId)
@@ -35,6 +38,7 @@ public class ReaderController : Controller
         }
 
         return View(new ReaderIndexModel() {
+            ApiUrl = _apiUrl,
             FileContent = text,
             Work = work
         });

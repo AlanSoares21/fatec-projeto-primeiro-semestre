@@ -25,4 +25,16 @@ public class LiteraryWorkController: StdController
             "application/html; charset=utf-8"
         );
     }
+
+    [HttpGet("{lwid}/mp3/{chapterIndex}")]
+    public async Task<IActionResult> Mp3(
+        string lwid, 
+        int chapterIndex,
+        ILiteraryWorkService ltwkSvc
+    ) {
+        return File(
+            await ltwkSvc.Mp3(lwid, chapterIndex), 
+            "audio/mpeg"
+        );
+    }
 }

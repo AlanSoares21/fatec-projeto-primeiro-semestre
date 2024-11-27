@@ -73,4 +73,41 @@ public class LiteraryWorkService : ILiteraryWorkService
         var c = await _works.FindAsync(w => w.Id == lwid);
         return c.SingleOrDefault();
     }
+
+    public async Task<FileStream> Mp3(string lwid, int chapterIndex)
+    {
+        var work = (await _works.FindAsync(
+            w => w.Id == lwid
+        )).FirstOrDefault();
+        if (work is null)
+            throw new ApiException(
+                HttpStatusCode.NotFound, 
+                "Work " + lwid + " not found."
+            );
+        if (work.Chapters.Count <= chapterIndex)
+            throw new ApiException(
+                HttpStatusCode.NotFound, 
+                "Work " + lwid + " dont have a chapter " + chapterIndex
+            );
+        var chapter = work.Chapters[chapterIndex];
+        if (chapter.Mp3 is null)
+            throw new ApiException(
+                HttpStatusCode.NotFound, 
+                "Work " + lwid + " dont have an audio file associated with the chapter " + chapterIndex
+            );
+        string realPath = Path.Join(_chaptersContentPath, chapter.Mp3);
+        if (!Path.Exists(realPath)) {
+            _log.LogCritical(
+                "Chapter audio in {path} not found. chapter: {index}, work: {work}",
+                realPath,
+                chapterIndex,
+                work.Id
+            );
+            throw new ApiException(
+                HttpStatusCode.BadRequest,
+                "Audio for the chapter "+ chapterIndex + " from the work " + work.Id + " not found"
+            );
+        }
+        return File.OpenRead(realPath);
+    }
 }

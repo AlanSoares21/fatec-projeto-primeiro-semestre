@@ -6,6 +6,13 @@
 <h3>
     @Model.Work.Title
 </h3>
+@if(Model.Work.Chapters.Any(c => c.Mp3 != null)) {
+    <section>
+        <audio controls>
+            <source src="@(Model.ApiUrl+"/LiteraryWork/"+Model.Work.Id+"/mp3/0")" type="audio/mpeg">
+        </audio>
+    </section>
+}
 <section>
     @Html.Raw(Model.FileContent)
 </section>
