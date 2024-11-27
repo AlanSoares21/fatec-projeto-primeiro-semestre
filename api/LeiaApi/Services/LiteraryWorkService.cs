@@ -67,4 +67,10 @@ public class LiteraryWorkService : ILiteraryWorkService
         response.Start = query.Start;
         return response;
     }
+
+    public async Task<LiteraryWork?> SearchWorkById(string lwid)
+    {
+        var c = await _works.FindAsync(w => w.Id == lwid);
+        return c.SingleOrDefault();
+    }
 }

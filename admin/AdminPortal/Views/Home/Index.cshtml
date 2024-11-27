@@ -1,8 +1,54 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model HomeIndexModel
+
+@{
+    ViewData["Title"] = "Home";
 }
 
+
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Obras disponíveis</h1>
 </div>
+<section class="row justify-content-center mt-1">
+    <div class="col-auto">
+        @{
+            var query = ServerUtils.GetQueryValues(Model.Pagination);
+            query.Remove("Start");
+        }
+        @await Component.InvokeAsync("Pagination", new {
+            start = Model.Pagination.Start,
+            count = Model.Pagination.Count,
+            total = Model.Works.Total,
+            query = query
+        })
+    </div>
+</section>
+<section class="row justify-content-center">
+    @foreach(var work in Model.Works.Data) {
+        <div class="col-auto mt-2">
+            <div class="card" style="width: 18rem;">
+                <img src="~/open-book.png" class="card-img-top" alt="capa do livro">
+                <div class="card-body">
+                    <h5 class="card-title">@work.Title</h5>
+                    <p class="card-text">@work.Author</p>
+                    <a 
+                        class="btn btn-success"
+                        asp-controller="Reader"
+                        asp-route-workId=@work.Id
+                    >
+                        Clique aqui para ler
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</section>
+<section class="row justify-content-center mt-3">
+    <div class="col-auto">
+        @await Component.InvokeAsync("Pagination", new {
+            start = Model.Pagination.Start,
+            count = Model.Pagination.Count,
+            total = Model.Works.Total,
+            query = query
+        })
+    </div>
+</section>

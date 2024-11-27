@@ -1,0 +1,14 @@
+@model ReaderIndexModel
+
+@{
+    ViewData["Title"] = Model.Work.Title;
+}
+<h3>
+    @Model.Work.Title
+</h3>
+<section>
+    @Html.Raw(Model.FileContent)
+</section>
+<section>
+    <b>Autor: </b><i>@Model.Work.Author</i>
+</section>
