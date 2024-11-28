@@ -83,7 +83,7 @@ ensure-env-variables-are-seted() {
     if [ -z $TTS_WORKER_INTERVAL_IN_SECONDS ]; then
         echo "variable TTS_WORKER_INTERVAL_IN_SECONDS empty using default value"
     else
-        WORKER_INTERVAL = $TTS_WORKER_INTERVAL_IN_SECONDS
+        WORKER_INTERVAL= $TTS_WORKER_INTERVAL_IN_SECONDS
     fi
     echo "WORKER_INTERVAL= $WORKER_INTERVAL"
 }
@@ -115,8 +115,8 @@ docker run \
  --network $DOCKER_NETWORK \
  -d \
  -v $CONTENT_PATH:/$CONTENT_PATH_CONTAINER \
- -v .uv-cache:/opt/uv-cache/ \
- -v .venv:/tts-script/.venv \
+ -v ./.uv-cache:/opt/uv-cache/ \
+ -v ./.venv:/tts-script/.venv \
  -e CONTENT_PATH=$CONTENT_PATH_CONTAINER \
  -e MongoDbConnStr=$MongoDbConnStr \
  -e DB_NAME=$MongoDbName \
