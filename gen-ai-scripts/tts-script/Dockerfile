@@ -14,4 +14,4 @@ COPY . /tts-script
 WORKDIR /tts-script
 RUN uv pip install -r pyproject.toml --system
 
-ENTRYPOINT ["/bin/env", "uv", "run", "main.py"]
+ENTRYPOINT ["/bin/env", "uv", "run", "/tts-script/main.py"]
