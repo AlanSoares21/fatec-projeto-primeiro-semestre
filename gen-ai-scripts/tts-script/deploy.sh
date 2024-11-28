@@ -22,7 +22,7 @@ build-docker-image() {
 }
 
 ensure-docker-image-exists() {
-    docker image ls | grep $$ImageName | grep $ImageVersion
+    docker image ls | grep $ImageName | grep $ImageVersion
     result=$?
     if [ ! $result = 0 ]; then
         echo "docker image $ImageName:$ImageVersion not found. building it"
