@@ -117,7 +117,7 @@ docker run \
  -v $CONTENT_PATH:/$CONTENT_PATH_CONTAINER \
  -e CONTENT_PATH=$CONTENT_PATH_CONTAINER \
  -e MongoDbConnStr=$MongoDbConnStr \
- -e MongoDbName=$MongoDbName \
+ -e DB_NAME=$MongoDbName \
  -e RBMQ_HOST=$RBMQ_HOST \
  -e RBMQ_PORT=$RBMQ_PORT \
  -e RBMQ_USER=$RBMQ_USER \
