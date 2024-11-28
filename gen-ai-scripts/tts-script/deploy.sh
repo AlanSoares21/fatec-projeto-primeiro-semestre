@@ -124,4 +124,7 @@ docker run \
  -e RBMQ_PORT=$RBMQ_PORT \
  -e RBMQ_USER=$RBMQ_USER \
  -e RBMQ_PASSWORD=$RBMQ_PASSWORD \
- $ImageName:$ImageVersion
+ $ImageName:$ImageVersion bash << EOF
+cd /tts-script
+uv run main.py
+EOF
