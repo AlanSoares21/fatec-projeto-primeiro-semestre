@@ -30,4 +30,7 @@ docker run \
  -e RBMQ_PASSWORD=$RBMQ_PASSWORD \
  -v ./.uv-cache:/opt/uv-cache \
  -e CONTENT_PATH=/content \
- $ImageName:$ImageVersion bash
+ $ImageName:$ImageVersion bash << EOF
+cd /tts-script
+uv run main.py
+EOF
