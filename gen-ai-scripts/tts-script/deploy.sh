@@ -1,7 +1,7 @@
 #!/bin/bash
 
-ApiImageName="eiind-api"
-ApiVersion="0.2"
+ImageName="genai-tts"
+ImageVersion="0.1"
 
 error() {
     echo $1
@@ -16,19 +16,21 @@ check-succes() {
 }
 
 build-docker-image() {
-    docker build . -t $ApiImageName:$ApiVersion
+    docker build . -t $ImageName:$ImageVersion
     check-succes "fail on build container image"
-    echo "docker image build: $ApiImageName:$ApiVersion"
+    echo "docker image build: $ImageName:$ImageVersion"
 }
 
 ensure-docker-image-exists() {
-    docker image ls | grep $ApiImageName | grep $ApiVersion
+    docker image ls | grep $$ImageName | grep $ImageVersion
     result=$?
     if [ ! $result = 0 ]; then
-        echo "docker image $ApiImageName:$ApiVersion not found. building it"
+        echo "docker image $ImageName:$ImageVersion not found. building it"
         build-docker-image
     fi
 }
+
+WORKER_INTERVAL=60
 
 ensure-env-variables-are-seted() {
     if [ -z $CONTENT_PATH ]; then
@@ -36,11 +38,13 @@ ensure-env-variables-are-seted() {
     fi
     echo "CONTENT_PATH= $CONTENT_PATH"
     
+    # MONGO_URI=
     if [ -z $MongoDbConnStr ]; then
         error "you need to set the variable MongoDbConnStr"
     fi
     echo "MongoDbConnStr= **hidden**"
 
+    # DB_NAME=
     if [ -z $MongoDbName ]; then
         error "you need to set the variable MongoDbName"
     fi
@@ -50,6 +54,38 @@ ensure-env-variables-are-seted() {
         error "you need to set the variable DOCKER_NETWORK"
     fi
     echo "DOCKER_NETWORK= $DOCKER_NETWORK"
+
+    if [ -z $RBMQ_HOST ]; then
+        error "you need to set the variable RBMQ_HOST"
+    fi
+    echo "RBMQ_HOST= $RBMQ_HOST"
+
+    if [ -z $RBMQ_PORT ]; then
+        error "you need to set the variable RBMQ_PORT"
+    fi
+    echo "RBMQ_PORT= $RBMQ_PORT"
+
+    if [ -z $RBMQ_USER ]; then
+        error "you need to set the variable RBMQ_USER"
+    fi
+    echo "RBMQ_USER= $RBMQ_USER"
+    
+    if [ -z $RBMQ_PASSWORD ]; then
+        error "you need to set the variable RBMQ_PASSWORD"
+    fi
+    echo "RBMQ_PASSWORD= ---"
+
+    if [ -z $RBMQ_TIMEOUT ]; then
+        error "you need to set the variable RBMQ_TIMEOUT"
+    fi
+    echo "RBMQ_TIMEOUT= $RBMQ_TIMEOUT"
+
+    if [ -z $TTS_WORKER_INTERVAL_IN_SECONDS ]; then
+        echo "variable TTS_WORKER_INTERVAL_IN_SECONDS empty using default value"
+    else
+        WORKER_INTERVAL = $TTS_WORKER_INTERVAL_IN_SECONDS
+    fi
+    echo "WORKER_INTERVAL= $WORKER_INTERVAL"
 }
 
 for ARG in $@; do
@@ -72,14 +108,18 @@ ensure-docker-image-exists
 ensure-env-variables-are-seted
 
 CONTENT_PATH_CONTAINER="/book-content"
-CONTAINER_NAME="zread-api"
+CONTAINER_NAME="tts-worker"
 
 docker run \
  --name $CONTAINER_NAME \
  --network $DOCKER_NETWORK \
- -dp 4000:8080 \
+ -d \
  -v $CONTENT_PATH:/$CONTENT_PATH_CONTAINER \
- -e ChaptersContentPath=$CONTENT_PATH_CONTAINER \
+ -e CONTENT_PATH=$CONTENT_PATH_CONTAINER \
  -e MongoDbConnStr=$MongoDbConnStr \
  -e MongoDbName=$MongoDbName \
- $ApiImageName:$ApiVersion
+ -e RBMQ_HOST=$RBMQ_HOST \
+ -e RBMQ_PORT=$RBMQ_PORT \
+ -e RBMQ_USER=$RBMQ_USER \
+ -e RBMQ_PASSWORD=$RBMQ_PASSWORD \
+ $ImageName:$ImageVersion
