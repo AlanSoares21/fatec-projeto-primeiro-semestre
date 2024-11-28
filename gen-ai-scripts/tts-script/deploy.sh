@@ -115,6 +115,8 @@ docker run \
  --network $DOCKER_NETWORK \
  -d \
  -v $CONTENT_PATH:/$CONTENT_PATH_CONTAINER \
+ -v uv-cache:/opt/uv-cache/ \
+ -v uv-venv:/tts-script/.venv \
  -e CONTENT_PATH=$CONTENT_PATH_CONTAINER \
  -e MongoDbConnStr=$MongoDbConnStr \
  -e DB_NAME=$MongoDbName \
